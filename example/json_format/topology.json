@@ -1,0 +1,114 @@
+{
+    "sw00": {
+        "type": "sw",
+        "links": {
+            "p2": "es08",
+            "p4": "sw01",
+            "p5": "sw07"
+        }
+    },
+    "sw01": {
+        "type": "sw",
+        "links": {
+            "p2": "es09",
+            "p4": "sw02",
+            "p5": "sw00"
+        }
+    },
+    "sw02": {
+        "type": "sw",
+        "links": {
+            "p2": "es10",
+            "p4": "sw03",
+            "p5": "sw01"
+        }
+    },
+    "sw03": {
+        "type": "sw",
+        "links": {
+            "p2": "es11",
+            "p4": "sw04",
+            "p5": "sw02"
+        }
+    },
+    "sw04": {
+        "type": "sw",
+        "links": {
+            "p2": "es12",
+            "p4": "sw05",
+            "p5": "sw03"
+        }
+    },
+    "sw05": {
+        "type": "sw",
+        "links": {
+            "p2": "es13",
+            "p4": "sw06",
+            "p5": "sw04"
+        }
+    },
+    "sw06": {
+        "type": "sw",
+        "links": {
+            "p2": "es14",
+            "p4": "sw07",
+            "p5": "sw05"
+        }
+    },
+    "sw07": {
+        "type": "sw",
+        "links": {
+            "p2": "es15",
+            "p4": "sw00",
+            "p5": "sw06"
+        }
+    },
+    "es08": {
+        "type": "end-station",
+        "links": {
+            "p2": "sw00"
+        }
+    },
+    "es09": {
+        "type": "end-station",
+        "links": {
+            "p2": "sw01"
+        }
+    },
+    "es10": {
+        "type": "end-station",
+        "links": {
+            "p2": "sw02"
+        }
+    },
+    "es11": {
+        "type": "end-station",
+        "links": {
+            "p2": "sw03"
+        }
+    },
+    "es12": {
+        "type": "end-station",
+        "links": {
+            "p2": "sw04"
+        }
+    },
+    "es13": {
+        "type": "end-station",
+        "links": {
+            "p2": "sw05"
+        }
+    },
+    "es14": {
+        "type": "end-station",
+        "links": {
+            "p2": "sw06"
+        }
+    },
+    "es15": {
+        "type": "end-station",
+        "links": {
+            "p2": "sw07"
+        }
+    }
+}

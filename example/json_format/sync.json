@@ -1,0 +1,82 @@
+{
+    "sw00": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "GM"
+    },
+    "sw01": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "Slave"
+    },
+    "sw02": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "BC"
+    },
+    "sw03": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "BC"
+    },
+    "sw04": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "BC"
+    },
+    "sw05": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "BC"
+    },
+    "sw06": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "BC"
+    },
+    "sw07": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "BC"
+    },
+    "es08": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "Slave"
+    },
+    "es09": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "Slave"
+    },
+    "es10": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "Slave"
+    },
+    "es11": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "Slave"
+    },
+    "es12": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "Slave"
+    },
+    "es13": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "Slave"
+    },
+    "es14": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "Slave"
+    },
+    "es15": {
+        "is_sync": false,
+        "offset": 0,
+        "type": "Slave"
+    }
+}
