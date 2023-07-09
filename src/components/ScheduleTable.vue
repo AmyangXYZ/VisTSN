@@ -3,6 +3,7 @@
 <template>
   <el-card>
     Schedule
+    <img height="24" src="@/assets/zhiyin-fast.gif"/>
     <div class="chart"></div>
   </el-card>
 </template>
