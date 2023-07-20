@@ -11,9 +11,10 @@
     const chart = echarts.init(chartRef.value!)
 
     // prep data for chart
-    const data = gclData.value.map((item: any) => {
-      return [item[1], item[2] - item[1]]
-    })
+    const data = gclData.value.map(([q, start, end]: number[]) => ({
+      name: `Q${q}`,
+      value: [start, end - start],
+    }))
 
     // set up chart options
     const options: echarts.EChartOption = {

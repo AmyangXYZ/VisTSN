@@ -16,7 +16,9 @@ export function useGCLData() {
 
             const pResponse = await fetch('../../example/json_format/prio2q.json')
             const pData = await pResponse.json()
-            gclData.value = pData['(0, 8)'] // data for (0, 8) only
+            priorityData.value = pData['(0, 8)'] // data for (0, 8) only
+                .map(([prio, q]) => `${prio}:${q}`)
+                .join(', ')
             
         } catch (error) {
             console.error('Error fetching data:', error)
