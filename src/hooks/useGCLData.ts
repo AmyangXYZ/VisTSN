@@ -3,8 +3,11 @@ import * as echarts from 'echarts';
 
 export function useGCLData() {
   const gclData = ref<Array<[number, number, number]>>([]);
+  const gclCycleMax = ref<number>(0);
+
   const linkData = ref<string>('');
   const priorityData = ref<string>('');
+
   const chartRef = ref<HTMLElement | null>(null);
   let chart: any = null;
 
@@ -13,7 +16,7 @@ export function useGCLData() {
       const gResponse = await fetch('../../example/json_format/gcl.json');
       const gData = await gResponse.json();
       gclData.value = gData['(0, 8)']; // data for (0, 8) only
-      console.log(gclData);
+      gclCycleMax.value = gData['cycle']; // e.g. 100,000
 
       linkData.value = '(0, 8)';
 
@@ -31,6 +34,9 @@ export function useGCLData() {
   watch(
     gclData,
     (newGCLData: any) => {
+      const xAxisData = newGCLData.map(([_, start, end]: [number, number, number]) => {
+        return start;
+      });
       // Set up chart options
       const options: echarts.EChartOption = {
         tooltip: {
@@ -45,16 +51,21 @@ export function useGCLData() {
         },
         xAxis: {
           type: 'category',
-          max: 7,
+          max: gclCycleMax.value / 10000, // divide is to properly space the intervals
           splitArea: {
             show: false
+          },
+          axisLabel: {
+            interval: 0,
+            align: 'left',
+            margin: 10
           }
         },
         yAxis: {
           type: 'category',
           data: ['Q0', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7'],
           splitArea: {
-            show: false
+            show: true
           }
         },
         visualMap: {
