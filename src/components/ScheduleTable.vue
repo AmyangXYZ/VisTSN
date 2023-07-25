@@ -6,6 +6,7 @@
 
 <template>
   <el-card>
+    <h4>Schedule</h4>
     <div class="main-section">
       <div class="chart" ref="chartRef"></div>
     </div>

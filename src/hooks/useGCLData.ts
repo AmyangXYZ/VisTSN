@@ -13,6 +13,7 @@ export function useGCLData() {
       const gResponse = await fetch('../../example/json_format/gcl.json');
       const gData = await gResponse.json();
       gclData.value = gData['(0, 8)']; // data for (0, 8) only
+      console.log(gclData);
 
       linkData.value = '(0, 8)';
 
@@ -29,58 +30,65 @@ export function useGCLData() {
   // Inside the watch callback
   watch(
     gclData,
-    (newGCLData) => {
-      // Prep data for chart
-      const data = newGCLData.map(([q, start, end]: [number, number, number]) => {
-        // Calculate interval length and start position
-        const length = end - start;
-        const intervalStart = start;
-
-        // For each label (Q0 to Q7), show its interval in orange, and the rest of the bar as white
-        const value = Array.from({ length: 8 }, (_, i) => {
-          return i === q ? [intervalStart, length] : [end, 10000 - length];
-        });
-    
-        return [
-          { name: `Q${q}`, value: value },
-        ];
-      });
-    
+    (newGCLData: any) => {
       // Set up chart options
       const options: echarts.EChartOption = {
         tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'shadow',
-          },
+          position: 'top'
+        },
+        legend: {
+          show: false
+        },
+        grid: {
+          height: '50%',
+          top: '10%'
         },
         xAxis: {
-          type: 'value',
-          name: 'Time',
-          max: 100000,
-          splitLine: {
-            show: false,
-          },
+          type: 'category',
+          max: 7,
+          splitArea: {
+            show: false
+          }
         },
         yAxis: {
           type: 'category',
           data: ['Q0', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7'],
+          splitArea: {
+            show: false
+          }
+        },
+        visualMap: {
+          min: 1,
+          max: 1,
+          calculable: true,
+          orient: 'horizontal',
+          left: 'center',
+          bottom: '15%'
         },
         series: [
           {
-            type: 'bar',
-            stack: 'time', // Add stack property to enable stacking
-            data: data.flatMap((d) => d), // Flatten the data array
-            itemStyle: {
-              color: function (params: any) {
-                // Set color based on the seriesIndex (bottom layer: 0, top layer: 1)
-                return params.seriesIndex === 0 ? 'orange' : 'white';
-              },
+            name: 'Interval',
+            type: 'heatmap',
+            data: newGCLData.map(([q, start, end]: [number, number, number]) => {
+              // For each interval, directly use the start and end points
+              return [start.toString(), q, end - start];
+            }),
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
             },
-          },
-        ],
+            label: {
+              show: false
+            },
+            itemStyle: {
+              color: 'orange',
+            }
+          }
+        ]
       };
-    
+
       // Render the chart if it's already initialized
       if (chart) {
         chart.setOption(options);
