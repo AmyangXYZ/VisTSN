@@ -69,12 +69,16 @@ export function useGCLData() {
           }
         },
         visualMap: {
+          type: 'piecewise',
           min: 1,
           max: 1,
           calculable: true,
           orient: 'horizontal',
           left: 'center',
-          bottom: '15%'
+          bottom: '15%',
+          pieces: [
+            {min: 0},
+          ]
         },
         series: [
           {
