@@ -3,7 +3,7 @@
 <template>
   <el-card>
     System Clock
-    <img height="24" src="@/assets/zhiyin-fast.gif"/>
+    <!-- <img height="24" src="@/assets/zhiyin-fast.gif"/> -->
     <div class="chart"></div>
   </el-card>
 </template>

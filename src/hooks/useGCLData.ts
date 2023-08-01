@@ -56,7 +56,7 @@ export function useGCLData() {
         return start;
       });
       // Set up chart options
-      const options: echarts.EChartOption = {
+      const options: echarts.EChartsOption = {
         tooltip: {
           position: 'top'
         },

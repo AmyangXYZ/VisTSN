@@ -40,7 +40,7 @@ export function useTopology() {
             delay: () => {
               return Math.random() * 2000
             },
-            symbol: 'image://' + zhiyin,
+            // symbol: 'image://' + zhiyin,
             symbolSize: 30,
             trailLength: 0,
             loop: true
