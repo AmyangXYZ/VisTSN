@@ -11,12 +11,30 @@ export function useGCLData() {
   const chartRef = ref<HTMLElement | null>(null);
   let chart: any = null;
 
+  const socket = ref<WebSocket | null>(null);
+
   onMounted(async () => {
     try {
-      const gResponse = await fetch('../../example/json_format/gcl.json');
-      const gData = await gResponse.json();
-      gclData.value = gData['(0, 8)']; // data for (0, 8) only
-      gclCycleMax.value = gData['cycle']; // e.g. 100,000
+      socket.value = new WebSocket('ws://localhost:4399'); // replace this with websocket address
+
+      socket.value.onopen = () => {
+        console.log('WebSocket connection established.')
+      };
+
+      socket.value.onmessage = (event: any) => {
+        const gData = JSON.parse(event.data);
+
+        gclData.value = gData['(0, 8)']; // data for (0, 8) only
+        gclCycleMax.value = gData['cycle']; // e.g. 100,000
+      };
+
+      socket.value.onerror = (error: any) => {
+        console.error('WebSocket error:', error);
+      };
+    
+      socket.value.onclose = () => {
+        console.log('WebSocket connection closed');
+      };
 
       linkData.value = '(0, 8)';
 
@@ -51,7 +69,7 @@ export function useGCLData() {
         },
         xAxis: {
           type: 'category',
-          max: gclCycleMax.value / 10000, // divide is to properly space the intervals
+          data: Array.from({ length: gclCycleMax.value / 10000 + 1 }, (_, i) => i * 10000),
           splitArea: {
             show: false
           },
