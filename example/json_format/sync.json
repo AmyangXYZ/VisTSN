@@ -6,17 +6,17 @@
     },
     "sw01": {
         "is_sync": false,
-        "offset": 0,
+        "offset": 90,
         "type": "Slave"
     },
     "sw02": {
         "is_sync": false,
-        "offset": 0,
+        "offset": -10,
         "type": "BC"
     },
     "sw03": {
         "is_sync": false,
-        "offset": 0,
+        "offset": -100,
         "type": "BC"
     },
     "sw04": {
@@ -26,27 +26,27 @@
     },
     "sw05": {
         "is_sync": false,
-        "offset": 0,
+        "offset": 80,
         "type": "BC"
     },
     "sw06": {
         "is_sync": false,
-        "offset": 0,
+        "offset": 99,
         "type": "BC"
     },
     "sw07": {
         "is_sync": false,
-        "offset": 0,
+        "offset": 10,
         "type": "BC"
     },
     "es08": {
         "is_sync": false,
-        "offset": 0,
+        "offset": 20,
         "type": "Slave"
     },
     "es09": {
         "is_sync": false,
-        "offset": 0,
+        "offset": 10,
         "type": "Slave"
     },
     "es10": {
@@ -61,22 +61,22 @@
     },
     "es12": {
         "is_sync": false,
-        "offset": 0,
+        "offset": 1,
         "type": "Slave"
     },
     "es13": {
         "is_sync": false,
-        "offset": 0,
+        "offset": 5,
         "type": "Slave"
     },
     "es14": {
         "is_sync": false,
-        "offset": 0,
+        "offset": 9,
         "type": "Slave"
     },
     "es15": {
         "is_sync": false,
-        "offset": 0,
+        "offset": 9,
         "type": "Slave"
     }
 }
