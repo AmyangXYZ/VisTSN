@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import { useGCLData } from '@/hooks/useGCLData'
+  import { useDrawGCL } from '@/hooks/useDrawGCL'
 
-  const { gclData, linkData, priorityData, chartRef } = useGCLData()
+  const { linkData, priorityData, chartRef } = useDrawGCL()
 </script>
 
 <template>
