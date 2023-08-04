@@ -18,6 +18,6 @@
 <style scoped>
 .chart {
   width: 100%;
-  height: 165px;
+  height: 222px;
 }
 </style>
