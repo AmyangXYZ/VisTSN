@@ -17,7 +17,7 @@ export function useDelayStatistics() {
             }
             displayData();
         } catch (error: any) {
-            console.error('Error fetch data:', error);
+            console.error('Error fetching data:', error);
         }
     });
 
@@ -64,6 +64,9 @@ export function useDelayStatistics() {
                 axisLabel: {
                     formatter: '{value}',
                 },
+                axisTick: {
+                    alignWithLabel: true
+                }
             },
             yAxis: {
                 type: 'value',
