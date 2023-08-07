@@ -7,6 +7,8 @@ export function useDelayStatistics() {
     const delayChartRef = ref<HTMLElement | null>(null); // historical delay status - line chart
     let chart: echarts.ECharts | null = null;
 
+    const socket = ref<WebSocket | null>(null);
+
     onMounted(async () => {
         // load flow json files
         try {

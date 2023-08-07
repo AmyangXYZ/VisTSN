@@ -8,6 +8,8 @@ export function useBandwidthStatistics() {
     const bandwidthChartRef = ref<HTMLElement | null>(null); // current bandwidth - bar chart
     let chart: echarts.ECharts | null = null;
 
+    const socket = ref<WebSocket | null>(null);
+
     onMounted(async () => {
         // load link json files
         try {

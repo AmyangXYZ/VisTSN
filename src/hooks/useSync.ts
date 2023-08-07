@@ -9,6 +9,8 @@ export function useSync() {
     const chartRef = ref<HTMLElement | null>(null);
     let chart: echarts.Echarts | null = null;
 
+    const socket = ref<WebSocket | null>(null);
+
     onMounted(async () => {
         try {
             const response = await fetch('../../example/json_format/sync.json');
