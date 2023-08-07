@@ -41,7 +41,7 @@ export function useTopology() {
               return Math.random() * 2000
             },
             // symbol: 'image://' + zhiyin,
-            symbolSize: 30,
+            symbolSize: 10,
             trailLength: 0,
             loop: true
           },
