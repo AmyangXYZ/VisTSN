@@ -1,7 +1,7 @@
 import { ref, onMounted, watch } from 'vue';
 import * as echarts from 'echarts';
 
-export function useGCLData() {
+export function useDrawGCL() {
   const gclData = ref<Array<[number, number, number]>>([]);
   const gclCycleMax = ref<number>(0);
 
@@ -140,5 +140,5 @@ export function useGCLData() {
     });
   });
 
-  return { gclData, linkData, priorityData, chartRef };
+  return { linkData, priorityData, chartRef };
 }
