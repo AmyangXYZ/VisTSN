@@ -1,4 +1,4 @@
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import * as echarts from 'echarts';
 
 export function useDelayStatistics() {
@@ -7,41 +7,63 @@ export function useDelayStatistics() {
     const delayChartRef = ref<HTMLElement | null>(null); // historical delay status - line chart
     let chart: echarts.ECharts | null = null;
 
-    onMounted(async () => {
-        // load flow json files
-        try {
-            for (let i = 0; i < 5; i++) {
-                const response = await fetch(`../../example/json_format/status/flow_t${i}.json`);
-                const jsonData = await response.json();
-                delayData.value = delayData.value.concat(jsonData.map((item: any) => [item.id, item.delay, item.jitter]));
-            }
+    const socket = ref<WebSocket | null>(null);
+
+    onMounted(() => {
+        // Open the WebSocket connection
+        socket.value = new WebSocket('ws://localhost:4399');
+
+        socket.value.onopen = () => {
+            console.log('WebSocket connection established.');
+        };
+
+        socket.value.onmessage = (event: any) => {
+            // Parse the WebSocket message data
+            const jsonData = JSON.parse(event.data)['delay'];
+
+            // Reset delayData on every message received from the WebSocket
+            delayData.value = delayData.value.concat(jsonData.map((item: any) => [item.id, item.delay, item.jitter]));
+
+            // Call displayData to update the chart
             displayData();
-        } catch (error: any) {
-            console.error('Error fetching data:', error);
-        }
+        };
+
+        socket.value.onerror = (error: any) => {
+            console.error('WebSocket error:', error);
+        };
+
+        socket.value.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
     });
 
     // for line chart - may need watch()
     const displayData = () => {
         const seriesData: echarts.EChartOption.Series[] = [];
 
-        for (let i = 0; i < 5; i++) {
-            const id = `ID ${i}`;
-            const yAxisData: number[] = [];
+        // Get unique id values from delayData
+        const uniqueIds = Array.from(new Set(delayData.value.map(([idValue]: any[]) => idValue)));
 
-            delayData.value.forEach(([idValue, delay, jitter]: [number, number, number]) => {
-                if (idValue === i) {
-                    yAxisData.push(delay);
-                }
-            });
+        // Group data by id
+        const groupedData: { [id: number]: number[] } = {};
+        delayData.value.forEach(([idValue, delay]: any[]) => {
+            if (!groupedData[idValue]) {
+                groupedData[idValue] = [];
+            }
+            groupedData[idValue].push(delay);
+        });
 
+        // Prepare x-axis data and seriesData for each id
+        uniqueIds.forEach((id: any) => {
+            const idName = `ID ${id}`;
+            const yAxisData = groupedData[id] || [];
             seriesData.push({
-                name: id,
+                name: idName,
                 type: 'line',
                 data: yAxisData,
                 smooth: true,
             });
-        }
+        });
 
         const options: echarts.EChartsOption = {
             title: {
@@ -56,22 +78,23 @@ export function useDelayStatistics() {
             grid: {
                 top: 80,
                 bottom: 30,
-                left: '20%'
+                left: '20%',
             },
             xAxis: {
                 type: 'category',
-                data: ['t0', 't1', 't2', 't3', 't4'],
+                data: uniqueIds.map((id) => `t${id}`),
                 axisLabel: {
                     formatter: '{value}',
                 },
                 axisTick: {
-                    alignWithLabel: true
-                }
+                    alignWithLabel: true,
+                },
             },
             yAxis: {
                 type: 'value',
             },
             series: seriesData,
+            
         };
 
         if (chart) {
@@ -81,10 +104,6 @@ export function useDelayStatistics() {
             chart.setOption(options);
         }
     };
-
-    watch(delayData, () => {
-        displayData();
-    });
 
     onMounted(() => {
         chart = echarts.init(delayChartRef.value!);

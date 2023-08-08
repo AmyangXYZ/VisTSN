@@ -1,39 +1,48 @@
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import * as echarts from 'echarts';
 
 export function useBandwidthStatistics() {
     const bandwidthData = ref<Array<{ [key: string]: { bandwidth: number } }>>([]);
-    let currentDataIndex = 0;
 
     const bandwidthChartRef = ref<HTMLElement | null>(null); // current bandwidth - bar chart
     let chart: echarts.ECharts | null = null;
 
-    onMounted(async () => {
-        // load link json files
-        try {
-            for (let i = 0; i < 5; i++) {
-                const response = await fetch(`../../example/json_format/status/link_t${i}.json`);
-                const jsonData = await response.json();
-                bandwidthData.value.push(jsonData);
-            }
+    const socket = ref<WebSocket | null>(null);
+
+    onMounted(() => {
+        // Open the WebSocket connection
+        socket.value = new WebSocket('ws://localhost:4399');
+
+        socket.value.onopen = () => {
+            console.log('WebSocket connection established.');
+        };
+
+        socket.value.onmessage = (event: any) => {
+            // Parse the WebSocket message data
+            const jsonData = JSON.parse(event.data)['bandwidth'];
+
+            // Reset bandwidthData on every message received from the WebSocket
+            bandwidthData.value.push(jsonData);
+
+            // Call displayData to update the chart
             displayData();
-            // cycle through data every second
-            setInterval(() => {
-                currentDataIndex = (currentDataIndex + 1) % bandwidthData.value.length;
-                displayData();
-            }, 1000);
-        }
-        catch (error: any) {
-            console.error('Error fetching data:', error);
-        }
+        };
+
+        socket.value.onerror = (error: any) => {
+            console.error('WebSocket error:', error);
+        };
+
+        socket.value.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
     });
 
     // for bar chart
     const displayData = () => {
-        const currentData = bandwidthData.value[currentDataIndex];
+        const currentData = bandwidthData.value[bandwidthData.value.length - 1];
 
         const xAxisData: string[] = [];
-        const yAxisData: string[] = [];
+        const yAxisData: number[] = [];
 
         for (const key in currentData) {
             xAxisData.push(key);
@@ -65,12 +74,11 @@ export function useBandwidthStatistics() {
                     data: yAxisData
                 }
             ]
-        }
-        
+        };
+
         if (chart) {
             chart.setOption(options);
-        }
-        else {
+        } else {
             chart = echarts.init(bandwidthChartRef.value!);
             chart.setOption(options);
         }

@@ -1,31 +1,54 @@
 import { ref, onMounted, watch } from 'vue';
 import * as echarts from 'echarts';
-import { Axis, EChartsOption } from 'node_modules/echarts/index';
 
 export function useSync() {
 
-    const syncData = ref<Array<[string, number, string]>>([]);
+    const syncData = ref<Array<{ [key: string]: { is_sync: boolean, offset: number, type: string } }>>([]);
 
     const chartRef = ref<HTMLElement | null>(null);
     let chart: echarts.Echarts | null = null;
 
+    const socket = ref<WebSocket | null>(null);
+
     onMounted(async () => {
         try {
-            const response = await fetch('../../example/json_format/sync.json');
-            syncData.value = await response.json();
-            displaySyncData();
+            // Open the WebSocket connection
+            socket.value = new WebSocket('ws://localhost:4399');
+
+            socket.value.onopen = () => {
+                console.log('WebSocket connection established.');
+            };
+
+            socket.value.onmessage = (event: any) => {
+                // Parse the WebSocket message data
+                const jsonData = JSON.parse(event.data)['clock'];
+
+                // Reset bandwidthData on every message received from the WebSocket
+                syncData.value.push(jsonData);
+
+                // Call displayData to update the chart
+                displayData();
+            };
+
+            socket.value.onerror = (error: any) => {
+                console.error('WebSocket error:', error);
+            };
+
+            socket.value.onclose = () => {
+                console.log('WebSocket connection closed');
+            };
         }
         catch (error: any) {
             console.error('Error fetching sync data:', error);
         }
     })
 
-    const displaySyncData = () => {
+    const displayData = () => {
         const xAxisData: string[] = [];
         const seriesData: number[] = [];
-        const nodes = Object.keys(syncData.value);
-        nodes.forEach((node) => {
-            const nodeData = syncData.value[node];
+        const currentNodes = Object.keys(syncData.value[syncData.value.length - 1]);
+        currentNodes.forEach((node) => {
+            const nodeData = syncData.value[syncData.value.length - 1][node];
             xAxisData.push(node);
             seriesData.push(nodeData.offset);
         });
