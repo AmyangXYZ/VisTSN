@@ -1,5 +1,6 @@
 import { ref, onMounted, watch } from 'vue';
 import * as echarts from 'echarts';
+import { createWebSocketConnection } from './useWebSocket';
 
 export function useDrawGCL() {
   const gclData = ref<Array<[number, number, number]>>([]);
@@ -15,27 +16,7 @@ export function useDrawGCL() {
 
   onMounted(async () => {
     try {
-      socket.value = new WebSocket('ws://localhost:4399');
-
-      socket.value.onopen = () => {
-        console.log('WebSocket connection established.')
-      };
-
-      socket.value.onmessage = (event: any) => {
-        const gData = JSON.parse(event.data)['schedule'];
-
-        gclData.value = gData['(0, 8)']; // data for (0, 8) only
-        gclCycleMax.value = gData['cycle']; // e.g. 100,000
-        displayData(); // Call displayData to update the chart
-      };
-
-      socket.value.onerror = (error: any) => {
-        console.error('WebSocket error:', error);
-      };
-
-      socket.value.onclose = () => {
-        console.log('WebSocket connection closed');
-      };
+      createWebSocketConnection('ws://localhost:4399', handleDataReceived);
 
       linkData.value = '(0, 8)';
 
@@ -48,6 +29,12 @@ export function useDrawGCL() {
       console.error('Error fetching data:', error);
     }
   });
+
+  const handleDataReceived = (jsonData: any) => {
+    gclData.value = jsonData['schedule']['(0, 8)']; // data for (0, 8) only
+    gclCycleMax.value = jsonData['schedule']['cycle']; // e.g. 100,000
+    displayData(); // Call displayData to update the chart
+  }
 
   const displayData = () => {
     const newGCLData = gclData.value;
@@ -68,7 +55,7 @@ export function useDrawGCL() {
       },
       xAxis: {
         type: 'category',
-        data: Array.from({ length: gclCycleMax.value / 10000 + 1 }, (_, i) => i * 10000),
+        //data: Array.from({ length: gclCycleMax.value / 10000 + 1 }, (_, i) => i * 10000),
         splitArea: {
           show: false
         },

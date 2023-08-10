@@ -1,5 +1,6 @@
 import { ref, onMounted, watch } from 'vue';
 import * as echarts from 'echarts';
+import { createWebSocketConnection } from './useWebSocket';
 
 export function useSync() {
 
@@ -11,37 +12,13 @@ export function useSync() {
     const socket = ref<WebSocket | null>(null);
 
     onMounted(async () => {
-        try {
-            // Open the WebSocket connection
-            socket.value = new WebSocket('ws://localhost:4399');
+        createWebSocketConnection('ws://localhost:4399', handleDataReceived);
+    });
 
-            socket.value.onopen = () => {
-                console.log('WebSocket connection established.');
-            };
-
-            socket.value.onmessage = (event: any) => {
-                // Parse the WebSocket message data
-                const jsonData = JSON.parse(event.data)['clock'];
-
-                // Reset bandwidthData on every message received from the WebSocket
-                syncData.value.push(jsonData);
-
-                // Call displayData to update the chart
-                displayData();
-            };
-
-            socket.value.onerror = (error: any) => {
-                console.error('WebSocket error:', error);
-            };
-
-            socket.value.onclose = () => {
-                console.log('WebSocket connection closed');
-            };
-        }
-        catch (error: any) {
-            console.error('Error fetching sync data:', error);
-        }
-    })
+    const handleDataReceived = (jsonData: any) => {
+        syncData.value.push(jsonData['clock']);
+        displayData();
+    }
 
     const displayData = () => {
         const xAxisData: string[] = [];

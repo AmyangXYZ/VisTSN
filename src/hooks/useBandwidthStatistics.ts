@@ -1,5 +1,6 @@
 import { ref, onMounted } from 'vue';
 import * as echarts from 'echarts';
+import { createWebSocketConnection } from './useWebSocket';
 
 export function useBandwidthStatistics() {
     const bandwidthData = ref<Array<{ [key: string]: { bandwidth: number } }>>([]);
@@ -10,32 +11,13 @@ export function useBandwidthStatistics() {
     const socket = ref<WebSocket | null>(null);
 
     onMounted(() => {
-        // Open the WebSocket connection
-        socket.value = new WebSocket('ws://localhost:4399');
-
-        socket.value.onopen = () => {
-            console.log('WebSocket connection established.');
-        };
-
-        socket.value.onmessage = (event: any) => {
-            // Parse the WebSocket message data
-            const jsonData = JSON.parse(event.data)['bandwidth'];
-
-            // Reset bandwidthData on every message received from the WebSocket
-            bandwidthData.value.push(jsonData);
-
-            // Call displayData to update the chart
-            displayData();
-        };
-
-        socket.value.onerror = (error: any) => {
-            console.error('WebSocket error:', error);
-        };
-
-        socket.value.onclose = () => {
-            console.log('WebSocket connection closed');
-        };
+        socket.value = createWebSocketConnection('ws://localhost:4399', handleDataReceived);
     });
+
+    const handleDataReceived = (jsonData: any) => {
+        bandwidthData.value.push(jsonData['bandwidth']);
+        displayData();
+    }
 
     // for bar chart
     const displayData = () => {

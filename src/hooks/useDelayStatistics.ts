@@ -1,5 +1,6 @@
 import { ref, onMounted } from 'vue';
 import * as echarts from 'echarts';
+import { createWebSocketConnection } from './useWebSocket';
 
 export function useDelayStatistics() {
     const delayData = ref<Array<[number, number, number]>>([]);
@@ -10,32 +11,13 @@ export function useDelayStatistics() {
     const socket = ref<WebSocket | null>(null);
 
     onMounted(() => {
-        // Open the WebSocket connection
-        socket.value = new WebSocket('ws://localhost:4399');
-
-        socket.value.onopen = () => {
-            console.log('WebSocket connection established.');
-        };
-
-        socket.value.onmessage = (event: any) => {
-            // Parse the WebSocket message data
-            const jsonData = JSON.parse(event.data)['delay'];
-
-            // Reset delayData on every message received from the WebSocket
-            delayData.value = delayData.value.concat(jsonData.map((item: any) => [item.id, item.delay, item.jitter]));
-
-            // Call displayData to update the chart
-            displayData();
-        };
-
-        socket.value.onerror = (error: any) => {
-            console.error('WebSocket error:', error);
-        };
-
-        socket.value.onclose = () => {
-            console.log('WebSocket connection closed');
-        };
+        createWebSocketConnection('ws://localhost:4399', handleDataReceived);
     });
+
+    const handleDataReceived = (jsonData: any) => {
+        delayData.value = delayData.value.concat(jsonData['delay'].map((item: any) => [item.id, item.delay, item.jitter]));
+        displayData();
+    }
 
     // for line chart - may need watch()
     const displayData = () => {
