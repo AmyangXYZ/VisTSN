@@ -1,17 +1,18 @@
 import { ref, onMounted } from 'vue';
+import { createWebSocketConnection } from './useWebSocket';
 
 export function useLog() {
     const logData = ref<string[]>([]);
 
+    const socket = ref<WebSocket | null>(null);
+
     onMounted(async () => {
-        try {
-            const response = await fetch('../../example/json_format/log.json');
-            logData.value = await response.json();
-        } 
-        catch (error) {
-            console.error('Error fetching data:', error);
-        }
+        createWebSocketConnection('ws://localhost:4399', handleDataReceived);
     });
+
+    const handleDataReceived = (jsonData: any) => {
+        logData.value.push(jsonData['log']);
+    }
 
     return { logData };
 }

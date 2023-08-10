@@ -12,10 +12,10 @@ import EventLogs from './components/EventLogs.vue'
       <el-col :span="13">
         <ScheduleTable />
         <el-row :gutter="30" style="margin-top: 30px">
-          <el-col :span="14">
+          <el-col :span="12">
             <SystemClock />
           </el-col>
-          <el-col :span="10">
+          <el-col :span="12">
             <NetworkStatistics />
           </el-col>
         </el-row>
