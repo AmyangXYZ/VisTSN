@@ -1,14 +1,13 @@
 import { ref, onMounted } from 'vue';
 import * as echarts from 'echarts';
 import { createWebSocketConnection } from './useWebSocket';
+import { DataZoomComponentOption } from 'node_modules/echarts/index';
 
 export function useDelayStatistics() {
     const delayData = ref<Array<[number, number, number]>>([]);
 
     const delayChartRef = ref<HTMLElement | null>(null); // historical delay status - line chart
     let chart: echarts.ECharts | null = null;
-
-    const socket = ref<WebSocket | null>(null);
 
     onMounted(() => {
         createWebSocketConnection('ws://localhost:4399', handleDataReceived);
@@ -49,7 +48,7 @@ export function useDelayStatistics() {
 
         const options: echarts.EChartsOption = {
             title: {
-                text: 'Historical Delay',
+                text: 'Delay',
             },
             tooltip: {
                 trigger: 'axis',
@@ -76,7 +75,18 @@ export function useDelayStatistics() {
                 type: 'value',
             },
             series: seriesData,
-            
+            /*
+            dataZoom: [
+                {
+                    type: 'inside',
+                    start: 0,
+                    end: 100
+                },
+                {
+                    start: 0,
+                    end: 100
+                }
+            ]*/
         };
 
         if (chart) {

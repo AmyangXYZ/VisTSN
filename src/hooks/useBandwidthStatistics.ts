@@ -8,10 +8,8 @@ export function useBandwidthStatistics() {
     const bandwidthChartRef = ref<HTMLElement | null>(null); // current bandwidth - bar chart
     let chart: echarts.ECharts | null = null;
 
-    const socket = ref<WebSocket | null>(null);
-
     onMounted(() => {
-        socket.value = createWebSocketConnection('ws://localhost:4399', handleDataReceived);
+        createWebSocketConnection('ws://localhost:4399', handleDataReceived);
     });
 
     const handleDataReceived = (jsonData: any) => {

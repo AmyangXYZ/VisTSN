@@ -12,8 +12,6 @@ export function useDrawGCL() {
   const chartRef = ref<HTMLElement | null>(null);
   let chart: any = null;
 
-  const socket = ref<WebSocket | null>(null);
-
   onMounted(async () => {
     try {
       createWebSocketConnection('ws://localhost:4399', handleDataReceived);
