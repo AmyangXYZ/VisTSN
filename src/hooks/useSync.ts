@@ -1,7 +1,6 @@
 import { ref, onMounted, watch } from 'vue';
 import * as echarts from 'echarts';
 import { createWebSocketConnection } from './useWebSocket';
-import { color } from 'node_modules/echarts/index';
 
 export function useSync() {
 
@@ -10,7 +9,7 @@ export function useSync() {
     const chartRef = ref<HTMLElement | null>(null);
     let chart: echarts.Echarts | null = null;
 
-    onMounted(async () => {
+    onMounted(() => {
         createWebSocketConnection('ws://localhost:4399', handleDataReceived);
     });
 
@@ -84,7 +83,7 @@ export function useSync() {
                         }
                     };
                 }),
-            }
+            },
         };
         
         if (chart) {
@@ -94,13 +93,11 @@ export function useSync() {
 
     function getColorByType(type: string): string {
         if (type === 'GM') {
-            return 'green';
+            return '#72b06a'; // green
         } else if (type === 'BC') {
-            return 'blue';
-        } else if (type === 'Slave') {
-            return 'red';
-        } else {
-            return 'orange'; // Default color
+            return '#3266bf'; // blue
+        } else { // Slave
+            return '#cc3939'; // red
         }
     }
 
