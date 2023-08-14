@@ -17,8 +17,12 @@ export function useTopology() {
         roam: true,
         zoom: 1,
         regions: [],
-        center: [300, 520]
+        center: [300, 520],
+        itemStyle: {
+          color: 'white', // Set the background color to white
+        }
       },
+      backgroundColor: 'white',
       series: [
         {
           type: 'scatter',

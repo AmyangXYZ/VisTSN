@@ -21,5 +21,13 @@ export function useLog() {
         }
     }
 
-    return { logData, logContainer, scrollToBottom };
+    const getMsgSubstring = (line: string) => {
+        return line.substring(0, line.indexOf('-') - 1);
+    }
+
+    const getTimeSubstring = (line: string) => {
+        return '[' + line.substring(line.indexOf('-') + 2) + '] ';
+    }
+
+    return { logData, logContainer, getTimeSubstring, getMsgSubstring };
 }
