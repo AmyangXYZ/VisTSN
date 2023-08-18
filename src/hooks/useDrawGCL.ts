@@ -34,6 +34,8 @@ export function useDrawGCL() {
     displayData(); // Call displayData to update the chart
   }
 
+  const cycleInterval = 10000;
+
   const displayData = () => {
     const newGCLData = gclData.value;
     const xAxisData = newGCLData.map(([_, start, end]: [number, number, number]) => {
@@ -53,14 +55,17 @@ export function useDrawGCL() {
       },
       xAxis: {
         type: 'category',
-        //data: Array.from({ length: gclCycleMax.value / 10000 + 1 }, (_, i) => i * 10000),
+        //data: Array.from({ length: newGCLData.length }, (_, i) => newGCLData[i][1]), // Use the start time as x-axis data
         splitArea: {
           show: false
         },
         axisLabel: {
           interval: 0,
           align: 'left',
-          margin: 10
+          margin: 10,
+        },
+        axisTick: {
+          interval: cycleInterval
         }
       },
       yAxis: {
