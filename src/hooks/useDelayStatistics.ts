@@ -1,7 +1,6 @@
 import { ref, onMounted } from 'vue';
 import * as echarts from 'echarts';
 import { createWebSocketConnection } from './useWebSocket';
-import { DataZoomComponentOption } from 'node_modules/echarts/index';
 
 export function useDelayStatistics() {
     const delayData = ref<Array<[number, number, number]>>([]);

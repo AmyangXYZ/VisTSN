@@ -29,7 +29,7 @@ export function useDrawGCL() {
   });
 
   const handleDataReceived = (jsonData: any) => {
-    gclData.value = jsonData['schedule']['(0, 8)']; // data for (0, 8) only
+    gclData.value = jsonData['schedule'][linkData.value];
     gclCycleMax.value = jsonData['schedule']['cycle']; // e.g. 100,000
     displayData(); // Call displayData to update the chart
   }
@@ -55,7 +55,7 @@ export function useDrawGCL() {
       },
       xAxis: {
         type: 'category',
-        //data: Array.from({ length: newGCLData.length }, (_, i) => newGCLData[i][1]), // Use the start time as x-axis data
+        data: Array.from({ length: Math.ceil(gclCycleMax.value / cycleInterval) + 1 }, (_, i) => i * cycleInterval), // Use the start time as x-axis data
         splitArea: {
           show: false
         },
