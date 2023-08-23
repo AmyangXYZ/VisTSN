@@ -12,35 +12,47 @@ export function useDrawGCL() {
   const chartRef = ref<HTMLElement | null>(null);
   let chart: any = null;
 
+  let links: any = ['loading links...']; // example
+
+  let currentLinkIndex = 0;
+
   onMounted(async () => {
     try {
       createWebSocketConnection('ws://localhost:4399', handleDataReceived);
-
-      linkData.value = '(0, 8)';
+      
+      linkData.value = links[currentLinkIndex];
 
       const pResponse = await fetch('../../example/json_format/prio2q.json');
       const pData = await pResponse.json();
-      priorityData.value = pData['(0, 8)'] // data for (0, 8) only
+      priorityData.value = pData[linkData.value]
         .map(([prio, q]: number[]) => `${prio}:${q}`)
         .join(', ');
     } catch (error) {
       console.error('Error fetching data:', error);
     }
+
+    setInterval(cycleLinks, 5000);
   });
 
-  const handleDataReceived = (jsonData: any) => {
-    gclData.value = jsonData['schedule'][linkData.value];
-    gclCycleMax.value = jsonData['schedule']['cycle']; // e.g. 100,000
-    displayData(); // Call displayData to update the chart
-  }
+  const cycleLinks = () => {
+    currentLinkIndex = (currentLinkIndex + 1) % links.length; // will always be some valid index
+    linkData.value = links[currentLinkIndex];
+  };
 
-  const cycleInterval = 10000;
+  const handleDataReceived = (jsonData: any) => {
+    gclCycleMax.value = jsonData['schedule']['cycle']; // e.g. 100,000
+    delete jsonData['schedule']['cycle'];
+    
+    links = Object.keys(jsonData['schedule']);
+    
+    gclData.value = jsonData['schedule'][linkData.value];
+    displayData(); // Call displayData to update the chart
+  };
+
+  const cycleInterval = 10000; // this probably won't change
 
   const displayData = () => {
     const newGCLData = gclData.value;
-    const xAxisData = newGCLData.map(([_, start, end]: [number, number, number]) => {
-      return start;
-    });
     // Set up chart options
     const options: echarts.EChartsOption = {
       tooltip: {
