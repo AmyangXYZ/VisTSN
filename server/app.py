@@ -56,7 +56,7 @@ def init_link_status(links, min_bandwidth=0, max_bandwidth=65536):
     return bandwidth_status
 
 
-def init_clock_status(nodes, min_offset=0, max_offset=1024):
+def init_clock_status(nodes, min_offset=-1024, max_offset=1024):
     init_clock_status = {}
     for node in nodes:
         init_clock_status[node] = {
