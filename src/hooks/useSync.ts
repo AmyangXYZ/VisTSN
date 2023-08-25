@@ -9,9 +9,7 @@ export function useSync() {
     const chartRef = ref<HTMLElement | null>(null);
     let chart: echarts.Echarts | null = null;
 
-    const socket = ref<WebSocket | null>(null);
-
-    onMounted(async () => {
+    onMounted(() => {
         createWebSocketConnection('ws://localhost:4399', handleDataReceived);
     });
 
@@ -22,12 +20,15 @@ export function useSync() {
 
     const displayData = () => {
         const xAxisData: string[] = [];
-        const seriesData: number[] = [];
+        const seriesData: any[] = [];
         const currentNodes = Object.keys(syncData.value[syncData.value.length - 1]);
         currentNodes.forEach((node) => {
             const nodeData = syncData.value[syncData.value.length - 1][node];
             xAxisData.push(node);
-            seriesData.push(nodeData.offset);
+            seriesData.push({
+                offset: nodeData.offset, 
+                type: nodeData.type
+            });
         });
 
         const options: echarts.EChartsOption = {
@@ -44,6 +45,8 @@ export function useSync() {
             xAxis: {
                 type: 'value',
                 position: 'top',
+                min: -1200,
+                max: 1200,
                 splitLine: {
                     lineStyle: {
                         type: 'dashed'
@@ -67,16 +70,36 @@ export function useSync() {
                     position: 'right',
                     formatter: '{b}'
                 },
-                data: seriesData.map((offset) => {
-                    return { value: offset, label: { position: 'right' } };
+                data: seriesData.map((item) => {
+                    const { offset, type } = item;
+                    
+                    const barColor = getColorByType(type);
+
+                    return {
+                        value: offset,
+                        label: { position: 'right' },
+                        itemStyle: {
+                            color: barColor
+                        }
+                    };
                 }),
-            }
+            },
         };
         
         if (chart) {
             chart.setOption(options);
         }
     };
+
+    function getColorByType(type: string): string {
+        if (type === 'GM') {
+            return '#72b06a'; // green
+        } else if (type === 'BC') {
+            return '#3266bf'; // blue
+        } else { // Slave
+            return '#cc3939'; // red
+        }
+    }
 
     onMounted(() => {
         // Initialize chart after data is fetched and set up

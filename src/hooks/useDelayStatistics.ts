@@ -8,8 +8,6 @@ export function useDelayStatistics() {
     const delayChartRef = ref<HTMLElement | null>(null); // historical delay status - line chart
     let chart: echarts.ECharts | null = null;
 
-    const socket = ref<WebSocket | null>(null);
-
     onMounted(() => {
         createWebSocketConnection('ws://localhost:4399', handleDataReceived);
     });
@@ -49,7 +47,7 @@ export function useDelayStatistics() {
 
         const options: echarts.EChartsOption = {
             title: {
-                text: 'Historical Delay',
+                text: 'Delay',
             },
             tooltip: {
                 trigger: 'axis',
@@ -64,7 +62,7 @@ export function useDelayStatistics() {
             },
             xAxis: {
                 type: 'category',
-                data: uniqueIds.map((id) => `t${id}`),
+                data: delayData.value.map((_item, index) => `t${index}`),
                 axisLabel: {
                     formatter: '{value}',
                 },
@@ -76,7 +74,16 @@ export function useDelayStatistics() {
                 type: 'value',
             },
             series: seriesData,
-            
+            dataZoom: [
+                {
+                    type: 'slider',
+                    xAxisIndex: [0],
+                    filterMode: 'filter',
+                    startValue: (delayData.value.length / 8) - 9, // want to show ~ 8 data points
+                    endValue: (delayData.value.length / 8) - 1,
+                    show: false
+                }
+            ]
         };
 
         if (chart) {

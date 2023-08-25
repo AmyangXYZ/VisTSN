@@ -12,35 +12,47 @@ export function useDrawGCL() {
   const chartRef = ref<HTMLElement | null>(null);
   let chart: any = null;
 
-  const socket = ref<WebSocket | null>(null);
+  let links: any = ['loading links...']; // example
+
+  let currentLinkIndex = 0;
 
   onMounted(async () => {
     try {
       createWebSocketConnection('ws://localhost:4399', handleDataReceived);
-
-      linkData.value = '(0, 8)';
+      
+      linkData.value = links[currentLinkIndex];
 
       const pResponse = await fetch('../../example/json_format/prio2q.json');
       const pData = await pResponse.json();
-      priorityData.value = pData['(0, 8)'] // data for (0, 8) only
+      priorityData.value = pData[linkData.value]
         .map(([prio, q]: number[]) => `${prio}:${q}`)
         .join(', ');
     } catch (error) {
       console.error('Error fetching data:', error);
     }
+
+    setInterval(cycleLinks, 5000);
   });
 
+  const cycleLinks = () => {
+    currentLinkIndex = (currentLinkIndex + 1) % links.length; // will always be some valid index
+    linkData.value = links[currentLinkIndex];
+  };
+
   const handleDataReceived = (jsonData: any) => {
-    gclData.value = jsonData['schedule']['(0, 8)']; // data for (0, 8) only
     gclCycleMax.value = jsonData['schedule']['cycle']; // e.g. 100,000
+    delete jsonData['schedule']['cycle'];
+    
+    links = Object.keys(jsonData['schedule']);
+    
+    gclData.value = jsonData['schedule'][linkData.value];
     displayData(); // Call displayData to update the chart
-  }
+  };
+
+  const cycleInterval = 10000; // this probably won't change
 
   const displayData = () => {
     const newGCLData = gclData.value;
-    const xAxisData = newGCLData.map(([_, start, end]: [number, number, number]) => {
-      return start;
-    });
     // Set up chart options
     const options: echarts.EChartsOption = {
       tooltip: {
@@ -55,14 +67,17 @@ export function useDrawGCL() {
       },
       xAxis: {
         type: 'category',
-        //data: Array.from({ length: gclCycleMax.value / 10000 + 1 }, (_, i) => i * 10000),
+        data: Array.from({ length: Math.ceil(gclCycleMax.value / cycleInterval) + 1 }, (_, i) => i * cycleInterval), // Use the start time as x-axis data
         splitArea: {
           show: false
         },
         axisLabel: {
           interval: 0,
           align: 'left',
-          margin: 10
+          margin: 10,
+        },
+        axisTick: {
+          interval: cycleInterval
         }
       },
       yAxis: {
